@@ -3,6 +3,9 @@
   "version": "1.0.1",
   "description": "validator middleware for express application , validation is generated from swagger file",
   "main": "./lib/index.js",
+  "files": [
+    "lib/**/*"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
