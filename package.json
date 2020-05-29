@@ -1,34 +1,50 @@
 {
-  "name": "swagger-validation-express",
-  "version": "1.0.1",
-  "description": "validator middleware for express application , validation is generated from swagger file",
-  "main": "./lib/index.js",
-  "files": [
-    "lib/**/*"
-  ],
-  "scripts": {
-    "build": "tsc"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/uranium93/swagger-validation-express.git"
-  },
-  "keywords": [
-    "swagger",
-    "validator",
-    "validation",
-    "joi",
-    "express",
-    "api"
-  ],
-  "author": "abderrahmen",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/uranium93/swagger-validation-express/issues"
-  },
-  "homepage": "https://github.com/uranium93/swagger-validation-express#readme",
-  "devDependencies": {
-    "prettier": "^2.0.5",
-    "typescript": "^3.9.3"
-  }
+    "name": "swagger-validation-express",
+    "version": "1.0.1",
+    "description": "validator middleware for express application , validation is generated from swagger file",
+    "main": "./lib/index.js",
+    "files": [
+        "lib/**/*"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/uranium93/swagger-validation-express.git"
+    },
+    "keywords": [
+        "swagger",
+        "validator",
+        "validation",
+        "joi",
+        "express",
+        "api"
+    ],
+    "author": "abderrahmen",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/uranium93/swagger-validation-express/issues"
+    },
+    "homepage": "https://github.com/uranium93/swagger-validation-express#readme",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^3.0.2",
+        "@typescript-eslint/parser": "^3.0.2",
+        "eslint": "^7.1.0",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-prettier": "^3.1.3",
+        "prettier": "^2.0.5",
+        "typescript": "^3.9.3"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.{js,ts,tsx}": [
+            "eslint --fix"
+        ]
+    }
 }
