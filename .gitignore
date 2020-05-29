@@ -105,3 +105,4 @@ dist
 
 # Compiled Typescript
 /lib
+/src/**/*.js

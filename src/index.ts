@@ -1,5 +1,3 @@
-import { CONT } from './controller';
-const test = () => {
-    console.log(CONT);
-    return true;
-};
+import readSwagger from './core/readSwagger';
+
+readSwagger('./../swagger.json');
