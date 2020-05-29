@@ -1,1 +1,1 @@
-export const CONT = "controller"
+export const CONT = 'controller';
