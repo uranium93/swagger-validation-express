@@ -164,9 +164,12 @@ export interface Header {
 
 ///////////////////////////////// END OF TYPES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 import readSwaggerAPI from './controller/readSwaggerAPI';
+import * as validateReq from './controller/validateReq';
 const swagger: Swagger | Error = readSwaggerAPI('./swagger.json');
 if ('message' in swagger) {
     console.log(swagger.message);
     throw swagger;
 }
 console.log(swagger);
+
+export const validatePath = (path: string): boolean => validateReq.validatePath(swagger, path);
