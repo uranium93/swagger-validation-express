@@ -1,4 +1,3 @@
-import readSwagger from './core/readSwagger';
 /*
 @ Type Level 1
  */
@@ -161,6 +160,13 @@ export interface Header {
     description?: string;
     externalDocs?: ExternalDocs;
 }
-readSwagger('./../swagger.json');
-
 // Swagger type ref: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#documentStructure
+
+///////////////////////////////// END OF TYPES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+import readSwaggerAPI from './controller/readSwaggerAPI';
+const swagger: Swagger | Error = readSwaggerAPI('./swagger.json');
+if ('message' in swagger) {
+    console.log(swagger.message);
+    throw swagger;
+}
+console.log(swagger);
