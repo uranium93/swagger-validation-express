@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import type { Swagger } from '../index';
-const readSwagger = (path: string): Swagger | Error => {
+export const readSwaggerCore = (path: string): Swagger | Error => {
     let swagger: Swagger;
     try {
         swagger = JSON.parse(fs.readFileSync(path, { encoding: 'utf8' }));
@@ -9,5 +9,3 @@ const readSwagger = (path: string): Swagger | Error => {
         return new Error('Error reading swagger file');
     }
 };
-
-export default readSwagger;
