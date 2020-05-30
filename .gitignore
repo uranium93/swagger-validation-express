@@ -106,3 +106,4 @@ dist
 # Compiled Typescript
 /lib
 /src/**/*.js
+server.js

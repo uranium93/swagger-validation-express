@@ -1,12 +1,13 @@
 import * as fs from 'fs';
-const readSwagger = (path: string): Record<string, unknown> | Error => {
-    let swagger: Record<string, unknown>;
+import type { Swagger } from '../index';
+const readSwagger = (path: string): Swagger | Error => {
+    let swagger: Swagger;
     try {
         swagger = JSON.parse(fs.readFileSync(path, { encoding: 'utf8' }));
         console.log(swagger);
         return swagger;
     } catch (error) {
-        console.log(error);
+        console.log(error.message);
         return new Error('Error reading swagger file');
     }
 };
