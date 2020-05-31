@@ -1,4 +1,4 @@
-import type { Swagger, ValidPaths, RequestExpress } from '../index';
+import type { Swagger, ValidPaths, RequestExpress, PathItems, Operation } from '../index';
 
 export const validPaths = (swagger: Swagger): ValidPaths => {
     const paths: ValidPaths = [[], []];
@@ -14,20 +14,31 @@ export const validPaths = (swagger: Swagger): ValidPaths => {
     }
     return paths;
 };
-export const validatePath = (validPaths: ValidPaths, req: RequestExpress): boolean => {
+export const validateReq = (validPaths: ValidPaths, req: RequestExpress): boolean => {
     let found = false;
-    const decodedURL = decodeURI(req.url);
     const [paths, pathsItems] = validPaths;
     for (let i = 0; i < paths.length; i++) {
-        const regEx = new RegExp(`^${paths[i]}$`);
-        if (regEx.test(decodedURL)) {
-            if (pathsItems[i][req.method.toLocaleLowerCase()]) {
-            } else {
-                return (found = false);
+        if (validateURL(paths[i], req.url)) {
+            if (validateMethod(pathsItems[i], req.method)) {
+                return (found = true);
             }
-            return (found = true);
+            return (found = false);
         }
     }
 
     return found;
+};
+
+const validateURL = (ValidPath: string, url: string): boolean => {
+    const decodedURL = decodeURI(url);
+    const regEx = new RegExp(`^${ValidPath}$`);
+    return regEx.test(decodedURL);
+};
+
+const validateMethod = (validMethods: Record<string, PathItems>, method: string): Operation | null => {
+    if (validMethods[method.toLocaleLowerCase()]) {
+        return validMethods[method.toLocaleLowerCase()];
+    } else {
+        return null;
+    }
 };

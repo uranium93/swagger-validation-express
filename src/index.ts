@@ -165,6 +165,7 @@ export interface Header {
 export type ValidPaths = [Array<string>, Array<Record<string, PathItems>>];
 import type { Request } from 'express';
 export type RequestExpress = Request;
+//export type RequestMethod = 'post' | 'get' | 'trace';
 ///////////////////////////////// END OF TYPES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 import readSwagger from './controller/readSwagger';
 import * as validateReq from './controller/validateReq';
@@ -174,4 +175,4 @@ if ('message' in swagger) {
     throw swagger;
 }
 const validPaths: ValidPaths = validateReq.validPaths(swagger);
-export const validatePath = (req: RequestExpress): boolean => validateReq.validatePath(validPaths, req);
+export const validate = (req: RequestExpress): boolean => validateReq.validateReq(validPaths, req);
