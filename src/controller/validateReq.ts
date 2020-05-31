@@ -1,4 +1,4 @@
-import type { Swagger, ValidPaths, RequestExpress, PathItems, Operation } from '../index';
+import type { Swagger, ValidPaths, RequestExpress, PathItems, Operation, Parameter, Reference } from '../index';
 
 export const validPaths = (swagger: Swagger): ValidPaths => {
     const paths: ValidPaths = [[], []];
@@ -20,18 +20,23 @@ export const validateReq = (validPaths: ValidPaths, req: RequestExpress): true |
     const requestURL = req.url;
     for (let i = 0; i < paths.length; i++) {
         if (validateURL(paths[i], requestURL)) {
-            if (validateMethod(pathsItems[i], requestMethod)) {
+            const operation: Operation | null = validateMethod(pathsItems[i], requestMethod);
+            if (operation) {
+                if (operation.parameters) {
+                    return validateQueryParams(operation.parameters, req.query);
+                }
                 return true;
             }
             throw new Error(`Method ${requestMethod} not valid`);
         }
     }
+
     throw new Error(`Url ${requestURL} is not valid`);
 };
 
 const validateURL = (ValidPath: string, url: string): boolean => {
     const decodedURL = decodeURI(url);
-    const regEx = new RegExp(`^${ValidPath}$`);
+    const regEx = new RegExp(`^${ValidPath}[?]{1}([-a-zA-Z0-9]+[=]{1}[-a-zA-Z0-9@:%_+.~#?&]*[&]*)*$`);
     return regEx.test(decodedURL);
 };
 
@@ -41,4 +46,22 @@ const validateMethod = (validMethods: Record<string, PathItems>, method: string)
     } else {
         return null;
     }
+};
+
+const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Record<string, any>): true | Error => {
+    for (const queryName in query) {
+        let found = false;
+        for (const parameter of parameters) {
+            if ('$ref' in parameter) {
+                // TODO handle ref case
+            } else {
+                if (queryName === parameter.name) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (!found) throw new Error(`${queryName} not valid`);
+    }
+    return true;
 };

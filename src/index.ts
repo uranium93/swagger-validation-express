@@ -106,6 +106,7 @@ export interface Parameter {
     required?: boolean;
     deprecated?: boolean;
     allowEmptyValue?: boolean;
+    schema?: Schema;
 }
 export interface Reference {
     $ref: string;
