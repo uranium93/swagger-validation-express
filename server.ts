@@ -5,7 +5,7 @@ import * as swaggerValidation from './lib';
 const app = express();
 const PORT = 2900;
 app.use((req, res, next) => {
-    if (swaggerValidation.validatePath(req.url)) {
+    if (swaggerValidation.validatePath(req)) {
         next();
     } else {
         res.status(401).json({ status: 'Rejected' });

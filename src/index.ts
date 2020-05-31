@@ -162,7 +162,9 @@ export interface Header {
 }
 // Swagger type ref: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#documentStructure
 
-export type ValidPaths = Array<string>;
+export type ValidPaths = [Array<string>, Array<Record<string, PathItems>>];
+import type { Request } from 'express';
+export type RequestExpress = Request;
 ///////////////////////////////// END OF TYPES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 import readSwagger from './controller/readSwagger';
 import * as validateReq from './controller/validateReq';
@@ -172,4 +174,4 @@ if ('message' in swagger) {
     throw swagger;
 }
 const validPaths: ValidPaths = validateReq.validPaths(swagger);
-export const validatePath = (url: string): boolean => validateReq.validatePath(validPaths, url);
+export const validatePath = (req: RequestExpress): boolean => validateReq.validatePath(validPaths, req);
