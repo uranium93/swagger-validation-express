@@ -171,5 +171,5 @@ if ('message' in swagger) {
     console.log(swagger.message);
     throw swagger;
 }
-const validPath: ValidPaths = validateReq.validPaths(swagger);
-export const validatePath = (path: string): boolean => validateReq.validatePath(validPath, path);
+const validPaths: ValidPaths = validateReq.validPaths(swagger);
+export const validatePath = (url: string): boolean => validateReq.validatePath(validPaths, url);
