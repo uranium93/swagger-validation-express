@@ -53,9 +53,10 @@ const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Re
         let found = false;
         for (const parameter of parameters) {
             if ('$ref' in parameter) {
-                // TODO handle ref case
+                // TODO #3 handle ref case
             } else {
                 if (queryName === parameter.name) {
+                    // TODO #4 validate param value based on schema
                     found = true;
                     break;
                 }
@@ -63,5 +64,6 @@ const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Re
         }
         if (!found) throw new Error(`${queryName} not valid`);
     }
+    // TODO #2 check required params
     return true;
 };
