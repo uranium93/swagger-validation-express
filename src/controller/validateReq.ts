@@ -14,19 +14,19 @@ export const validPaths = (swagger: Swagger): ValidPaths => {
     }
     return paths;
 };
-export const validateReq = (validPaths: ValidPaths, req: RequestExpress): boolean => {
-    let found = false;
+export const validateReq = (validPaths: ValidPaths, req: RequestExpress): true | Error => {
     const [paths, pathsItems] = validPaths;
+    const requestMethod = req.method;
+    const requestURL = req.url;
     for (let i = 0; i < paths.length; i++) {
-        if (validateURL(paths[i], req.url)) {
-            if (validateMethod(pathsItems[i], req.method)) {
-                return (found = true);
+        if (validateURL(paths[i], requestURL)) {
+            if (validateMethod(pathsItems[i], requestMethod)) {
+                return true;
             }
-            return (found = false);
+            throw new Error(`Method ${requestMethod} not valid`);
         }
     }
-
-    return found;
+    throw new Error(`Url ${requestURL} is not valid`);
 };
 
 const validateURL = (ValidPath: string, url: string): boolean => {

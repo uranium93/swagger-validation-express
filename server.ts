@@ -4,15 +4,15 @@ import * as swaggerValidation from './lib';
 
 const app = express();
 const PORT = 2900;
-app.use((req, res, next) => {
-    if (swaggerValidation.validate(req)) {
-        next();
-    } else {
-        res.status(401).json({ status: 'Rejected' });
-    }
-
-    //
-});
+// app.use((req, res, next) => {
+//     try {
+//         swaggerValidation.validate(req);
+//         next();
+//     } catch (error) {
+//         res.status(401).json({ status: 'Rejected', message: error.message });
+//     }
+// });
+app.use(swaggerValidation.middleware);
 app.post('/test', (req, res) => {
     res.json({ status: 'success' });
 });

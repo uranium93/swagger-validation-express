@@ -163,9 +163,11 @@ export interface Header {
 // Swagger type ref: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#documentStructure
 
 export type ValidPaths = [Array<string>, Array<Record<string, PathItems>>];
-import type { Request } from 'express';
+import type { Request, NextFunction } from 'express';
+import type { Response as ResponseExpress } from 'express';
 export type RequestExpress = Request;
-//export type RequestMethod = 'post' | 'get' | 'trace';
+type NextFunctionExpress = NextFunction;
+
 ///////////////////////////////// END OF TYPES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 import readSwagger from './controller/readSwagger';
 import * as validateReq from './controller/validateReq';
@@ -175,4 +177,12 @@ if ('message' in swagger) {
     throw swagger;
 }
 const validPaths: ValidPaths = validateReq.validPaths(swagger);
-export const validate = (req: RequestExpress): boolean => validateReq.validateReq(validPaths, req);
+export const validate = (req: RequestExpress): true | Error => validateReq.validateReq(validPaths, req);
+export const middleware = (req: RequestExpress, res: ResponseExpress, next: NextFunctionExpress): void => {
+    try {
+        validate(req);
+        next();
+    } catch (error) {
+        res.status(401).json({ status: 'Rejected', message: error.message });
+    }
+};
