@@ -60,7 +60,7 @@
                         "description": "id of service"
                     },
                     {
-                        "in": "path",
+                        "in": "query",
                         "name": "query1",
                         "required": false,
                         "schema": {
@@ -70,7 +70,7 @@
                         "description": "id of service"
                     },
                     {
-                        "in": "path",
+                        "in": "query",
                         "name": "query2",
                         "required": true,
                         "schema": {

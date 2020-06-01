@@ -36,7 +36,7 @@ export const validateReq = (validPaths: ValidPaths, req: RequestExpress): true |
 
 const validateURL = (ValidPath: string, url: string): boolean => {
     const decodedURL = decodeURI(url);
-    const regEx = new RegExp(`^${ValidPath}[?]{1}([-a-zA-Z0-9]+[=]{1}[-a-zA-Z0-9@:%_+.~#?&]*[&]*)*$`);
+    const regEx = new RegExp(`^${ValidPath}([?]{1}[-a-zA-Z0-9]+[=]{1}[-a-zA-Z0-9@:%_+.~#?&=]*)*$`);
     return regEx.test(decodedURL);
 };
 
@@ -49,6 +49,16 @@ const validateMethod = (validMethods: Record<string, PathItems>, method: string)
 };
 
 const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Record<string, any>): true | Error => {
+    const queryKeys = Object.keys(query);
+    for (const parameter of parameters) {
+        if ('$ref' in parameter) {
+            // TODO #3 handle ref case
+        } else {
+            if (parameter.in === 'query' && parameter.required && !queryKeys.includes(parameter.name)) {
+                throw new Error(`${parameter.name} is required`);
+            }
+        }
+    }
     for (const queryName in query) {
         let found = false;
         for (const parameter of parameters) {
@@ -64,6 +74,5 @@ const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Re
         }
         if (!found) throw new Error(`${queryName} not valid`);
     }
-    // TODO #2 check required params
     return true;
 };
