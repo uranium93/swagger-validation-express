@@ -1,4 +1,13 @@
-import type { Swagger, ValidPaths, RequestExpress, PathItems, Operation, Parameter, Reference } from '../index';
+import type {
+    Swagger,
+    ValidPaths,
+    RequestExpress,
+    PathItems,
+    Operation,
+    Parameter,
+    Reference,
+    RequestBody,
+} from '../index';
 
 export const validPaths = (swagger: Swagger): ValidPaths => {
     const paths: ValidPaths = [[], []];
@@ -23,7 +32,10 @@ export const validateReq = (validPaths: ValidPaths, req: RequestExpress): true |
             const operation: Operation | null = validateMethod(pathsItems[i], requestMethod);
             if (operation) {
                 if (operation.parameters) {
-                    return validateQueryParams(operation.parameters, req.query);
+                    validateQueryParams(operation.parameters, req.query);
+                }
+                if (operation.requestBody) {
+                    validateRequestBody(operation.requestBody, req.body);
                 }
                 return true;
             }
@@ -48,6 +60,32 @@ const validateMethod = (validMethods: Record<string, PathItems>, method: string)
     }
 };
 
+const validateTypeParams = (swaggerType: string, query: string): Error | true => {
+    switch (swaggerType) {
+        case 'string':
+            if (!RegExp(`[\s\S]*`).test(query)) {
+                throw new Error(`${query} didn't match the type`);
+            }
+            break;
+        case 'number':
+            if (!RegExp(`[0-9]*`).test(query)) {
+                throw new Error(`${query} didn't match the type`);
+            }
+            break;
+        case 'boolean':
+            if (!['true', 'false'].includes(query)) {
+                throw new Error(`${query} didn't match the type`);
+            }
+            break;
+        default:
+            throw new Error(
+                `${query} not valid ${swaggerType} not a recognized type,
+                 use type string and define your pattern instead`,
+            );
+    }
+    return true;
+};
+
 const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Record<string, any>): true | Error => {
     const queryKeys = Object.keys(query);
     for (const parameter of parameters) {
@@ -66,13 +104,30 @@ const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Re
                 // TODO #3 handle ref case
             } else {
                 if (queryName === parameter.name) {
-                    // TODO #4 validate param value based on schema
+                    if (parameter.schema) {
+                        if (parameter.schema.pattern) {
+                            if (!RegExp(parameter.schema.pattern).test(query[queryName])) {
+                                throw new Error(`${queryName} didn't match the pattern`);
+                            }
+                        } else if (parameter.schema.type) {
+                            validateTypeParams(parameter.schema.type, query[queryName]);
+                        }
+                    }
                     found = true;
                     break;
                 }
             }
         }
         if (!found) throw new Error(`${queryName} not valid`);
+    }
+    return true;
+};
+
+const validateRequestBody = (swaggerValidBody: RequestBody | Reference, { body }: RequestExpress): true | Error => {
+    if (swaggerValidBody) {
+        // TODO handle ref case
+        // check required prop
+        // validate body based on schema
     }
     return true;
 };
