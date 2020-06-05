@@ -65,7 +65,8 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "minimum": 1
+                            "minimum": 1,
+                            "pattern": "^[0-9]{3}-[a-z]{2}-[A-Z]{4}$"
                         },
                         "description": "id of service"
                     },

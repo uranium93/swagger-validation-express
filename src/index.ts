@@ -136,6 +136,8 @@ export interface Schema {
     externalDocs?: ExternalDocs;
     example?: string;
     deprecated?: boolean;
+    pattern?: string;
+    type?: string;
 }
 export interface Discriminator {
     propertyName: string;
