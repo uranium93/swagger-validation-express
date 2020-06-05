@@ -12,6 +12,7 @@ const PORT = 2900;
 //         res.status(401).json({ status: 'Rejected', message: error.message });
 //     }
 // });
+app.use(express.json());
 app.use(swaggerValidation.middleware);
 app.post('/test', (req, res) => {
     res.json({ status: 'success' });
