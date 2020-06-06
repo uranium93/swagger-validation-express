@@ -126,10 +126,8 @@ const validateQueryParams = (parameters: Array<Parameter | Reference>, { query }
 
 const validateBodyJson = (swaggerValidBodySchema: Schema, value: any): void | Error => {
     const { type } = swaggerValidBodySchema;
-    console.log({ type, value });
     switch (type) {
         case 'string':
-            console.log(swaggerValidBodySchema.pattern);
             if (swaggerValidBodySchema.pattern) {
                 if (!RegExp(swaggerValidBodySchema.pattern).test(value)) {
                     throw Error(`${value} is not valid : ${swaggerValidBodySchema.pattern}`);

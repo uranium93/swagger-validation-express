@@ -1,6 +1,6 @@
 {
     "name": "swagger-validation-express",
-    "version": "1.0.1",
+    "version": "1.0.4",
     "description": "validator middleware for express application , validation is generated from swagger file",
     "main": "./lib/index.js",
     "files": [
