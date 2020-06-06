@@ -203,7 +203,6 @@ export const middleware = (req: RequestExpress, res: ResponseExpress, next: Next
         validate(req);
         next();
     } catch (error) {
-        // console.log(error);
         res.status(401).json({ status: 'Rejected', message: error.message });
     }
 };
