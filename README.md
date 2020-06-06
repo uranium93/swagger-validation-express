@@ -11,6 +11,14 @@ swagger-validation-express uses the open source definition of swagger to work pr
 -   [Swagger] - the official website
 -   [OpenApi 3.0.0] - the module created based on version 3.0.0 definition
 
+### Coming soon
+
+-   headers validation
+-   formdata validation
+-   logger
+-   white listing of url
+-   flexible swagger file path
+
 ### Installation
 
 swagger-validation-express:
