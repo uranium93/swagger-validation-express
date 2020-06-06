@@ -1,0 +1,338 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "exemple",
+        "description": "discription test",
+        "version": "1.0.0"
+    },
+    "externalDocs": {
+        "description": "API documentation reference",
+        "url": "https://exemple.com"
+    },
+    "servers": [
+        {
+            "url": "{protocol}:{localhost}/api",
+            "description": "expample server",
+            "variables": {
+                "protocol": {
+                    "enum": ["https"],
+                    "default": "https",
+                    "description": "Server Protocol"
+                },
+                "host": {
+                    "enum": ["localhost:2900"],
+                    "default": "localhost:2900",
+                    "description": "Server Host"
+                }
+            }
+        }
+    ],
+    "tags": [
+        {
+            "name": "tag1",
+            "description": "description for tag 1"
+        },
+        {
+            "name": "tag 2",
+            "description": "description for tag 2"
+        }
+    ],
+    "paths": {
+        "/service1/{id}/hold": {
+            "summary": "Get infos abou service 1",
+            "description": "this is a discription",
+            "post": {
+                "tags": ["tag1"],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minimum": 1
+                        },
+                        "description": "id of service"
+                    },
+                    {
+                        "in": "query",
+                        "name": "query1",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "minimum": 1,
+                            "pattern": "^[0-9]{3}-[a-z]{2}-[A-Z]{4}$"
+                        },
+                        "description": "id of service"
+                    },
+                    {
+                        "in": "query",
+                        "name": "query2",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minimum": 1
+                        },
+                        "description": "id of service"
+                    }
+                ],
+                "requestBody": {
+                    "description": "",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "reserve resource",
+                                "type": "object",
+                                "properties": {
+                                    "key1": {
+                                        "type": "number"
+                                    },
+                                    "key2": {
+                                        "type": "string"
+                                    },
+                                    "record": {
+                                        "type": "object",
+                                        "properties": {
+                                            "subKey1": {
+                                                "type": "number"
+                                            },
+                                            "subKey2": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "final": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "script": {
+                                                        "type": "string",
+                                                        "pattern": "^<script>.*</script>$"
+                                                    }
+                                                },
+                                                "required": ["script"]
+                                            }
+                                        },
+                                        "required": ["subKey2"]
+                                    }
+                                },
+                                "example": {
+                                    "config": {
+                                        "time": {
+                                            "value": "1M",
+                                            "priority": 5
+                                        },
+                                        "aync": {
+                                            "value": false
+                                        }
+                                    }
+                                },
+                                "required": ["key2"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/200"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
+                    }
+                }
+            }
+        },
+        "/service2/{id}/hold": {
+            "summary": "Get infos abou service 1",
+            "description": "this is a discription",
+            "post": {
+                "tags": ["tag 2"],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minimum": 1
+                        },
+                        "description": "id of service"
+                    }
+                ],
+                "requestBody": {
+                    "description": "",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "reserve resource",
+                                "type": "object",
+                                "properties": {
+                                    "config": {
+                                        "type": "object"
+                                    }
+                                },
+                                "example": {
+                                    "config": {
+                                        "time": {
+                                            "value": "1M",
+                                            "priority": 5
+                                        },
+                                        "aync": {
+                                            "value": false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/200"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
+                    }
+                }
+            }
+        },
+        "/service1/info": {
+            "summary": "Get info",
+            "description": "get inbfo from service 1",
+            "get": {
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minimum": 1
+                        },
+                        "description": "id of service"
+                    },
+                    {
+                        "in": "query",
+                        "name": "scope",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minimum": 5
+                        },
+                        "description": "scope of data"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/200"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "basicAuth": {
+                "type": "http",
+                "scheme": "basic"
+            }
+        },
+        "responses": {
+            "200": {
+                "description": "GOOD",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/2xx"
+                        }
+                    }
+                }
+            },
+            "400": {
+                "description": "Bad",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/4xx-5xx"
+                        }
+                    }
+                }
+            },
+            "404": {
+                "description": "NO",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/4xx-5xx"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "ERROR",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/4xx-5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "2xx": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "default": "success"
+                    },
+                    "data": {
+                        "type": "object"
+                    },
+                    "trace": {
+                        "type": "string"
+                    }
+                }
+            },
+            "4xx-5xx": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "string",
+                        "default": "fail"
+                    },
+                    "error": {
+                        "type": "object"
+                    }
+                }
+            }
+        }
+    }
+}
