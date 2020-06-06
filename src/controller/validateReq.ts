@@ -7,6 +7,7 @@ import type {
     Parameter,
     Reference,
     RequestBody,
+    Schema,
 } from '../index';
 
 export const validPaths = (swagger: Swagger): ValidPaths => {
@@ -32,10 +33,10 @@ export const validateReq = (validPaths: ValidPaths, req: RequestExpress): true |
             const operation: Operation | null = validateMethod(pathsItems[i], requestMethod);
             if (operation) {
                 if (operation.parameters) {
-                    validateQueryParams(operation.parameters, req.query);
+                    validateQueryParams(operation.parameters, req);
                 }
                 if (operation.requestBody) {
-                    validateRequestBody(operation.requestBody, req.body);
+                    validateRequestBody(operation.requestBody, req);
                 }
                 return true;
             }
@@ -86,7 +87,7 @@ const validateTypeParams = (swaggerType: string, query: string): Error | true =>
     return true;
 };
 
-const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Record<string, any>): true | Error => {
+const validateQueryParams = (parameters: Array<Parameter | Reference>, { query }: RequestExpress): true | Error => {
     const queryKeys = Object.keys(query);
     for (const parameter of parameters) {
         if ('$ref' in parameter) {
@@ -106,11 +107,11 @@ const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Re
                 if (queryName === parameter.name) {
                     if (parameter.schema) {
                         if (parameter.schema.pattern) {
-                            if (!RegExp(parameter.schema.pattern).test(query[queryName])) {
+                            if (!RegExp(parameter.schema.pattern).test(`${query[queryName]}`)) {
                                 throw new Error(`${queryName} didn't match the pattern`);
                             }
                         } else if (parameter.schema.type) {
-                            validateTypeParams(parameter.schema.type, query[queryName]);
+                            validateTypeParams(parameter.schema.type, `${query[queryName]}`);
                         }
                     }
                     found = true;
@@ -123,9 +124,88 @@ const validateQueryParams = (parameters: Array<Parameter | Reference>, query: Re
     return true;
 };
 
-const validateRequestBody = (swaggerValidBody: RequestBody | Reference, { body }: RequestExpress): true | Error => {
+const validateBodyJson = (swaggerValidBodySchema: Schema, value: any): void | Error => {
+    const { type } = swaggerValidBodySchema;
+    console.log({ type, value });
+    switch (type) {
+        case 'string':
+            console.log(swaggerValidBodySchema.pattern);
+            if (swaggerValidBodySchema.pattern) {
+                if (!RegExp(swaggerValidBodySchema.pattern).test(value)) {
+                    throw Error(`${value} is not valid : ${swaggerValidBodySchema.pattern}`);
+                }
+            } else {
+                if (typeof value !== 'string' || !RegExp(`[\s\S]*`).test(value)) {
+                    throw new Error(`${value} didn't match the type string`);
+                }
+            }
+            break;
+        case 'number':
+            if (swaggerValidBodySchema.pattern) {
+                if (!RegExp(swaggerValidBodySchema.pattern).test(value)) {
+                    throw Error(`${value} is not valid : ${swaggerValidBodySchema.pattern}`);
+                }
+            } else {
+                if (typeof value !== 'number') {
+                    throw new Error(`${value} didn't match the type number`);
+                }
+            }
+            break;
+        case 'boolean':
+            if (swaggerValidBodySchema.pattern) {
+                if (!RegExp(swaggerValidBodySchema.pattern).test(value)) {
+                    throw Error(`${value} is not valid : ${swaggerValidBodySchema.pattern}`);
+                }
+            } else {
+                if (typeof value !== 'boolean') {
+                    throw new Error(`${value} didn't match the type boolean`);
+                }
+            }
+            break;
+        case 'object':
+            if (swaggerValidBodySchema.properties) {
+                const bodyKeys = Object.keys(value);
+                const notValidProps = bodyKeys._missing(Object.keys(swaggerValidBodySchema.properties));
+                if (notValidProps) {
+                    throw Error(`${notValidProps} are not allowed`);
+                }
+                if (swaggerValidBodySchema.required) {
+                    const missingRequiredProp = swaggerValidBodySchema.required._missing(bodyKeys);
+                    if (missingRequiredProp) {
+                        throw Error(`${missingRequiredProp} are required in body`);
+                    }
+                }
+                for (const bodyKey of bodyKeys) {
+                    validateBodyJson(swaggerValidBodySchema.properties[bodyKey], value[bodyKey]);
+                }
+            }
+            break;
+        default:
+            throw Error(`${JSON.stringify(value)} is not valid`);
+    }
+};
+const validateRequestBody = (swaggerValidBody: RequestBody | Reference, req: RequestExpress): true | Error => {
+    const { body } = req;
     if (swaggerValidBody) {
-        // TODO handle ref case
+        if (!body) {
+            throw Error('Body is not parsed');
+        }
+        if ('$ref' in swaggerValidBody) {
+            // TODO handle ref case
+        } else {
+            if (swaggerValidBody.required && Object.keys(body).length === 0) {
+                throw Error('Body is required');
+            }
+            const appJson = swaggerValidBody.content['application/json'];
+            if (appJson) {
+                if ('$ref' in appJson.schema) {
+                    // TODO handle ref case
+                } else {
+                    validateBodyJson(appJson.schema, body);
+                }
+            }
+        }
+
         // check required prop
         // validate body based on schema
     }

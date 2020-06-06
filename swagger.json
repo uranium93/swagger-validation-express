@@ -90,8 +90,33 @@
                                 "title": "reserve resource",
                                 "type": "object",
                                 "properties": {
-                                    "config": {
-                                        "type": "object"
+                                    "key1": {
+                                        "type": "number"
+                                    },
+                                    "key2": {
+                                        "type": "string"
+                                    },
+                                    "record": {
+                                        "type": "object",
+                                        "properties": {
+                                            "subKey1": {
+                                                "type": "number"
+                                            },
+                                            "subKey2": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "final": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "script": {
+                                                        "type": "string",
+                                                        "pattern": "^<script>.*</script>$"
+                                                    }
+                                                },
+                                                "required": ["script"]
+                                            }
+                                        },
+                                        "required": ["subKey2"]
                                     }
                                 },
                                 "example": {
@@ -104,7 +129,8 @@
                                             "value": false
                                         }
                                     }
-                                }
+                                },
+                                "required": ["key2"]
                             }
                         }
                     }

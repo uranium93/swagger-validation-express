@@ -113,7 +113,7 @@ export interface Reference {
 }
 export interface RequestBody {
     description?: string;
-    content: Array<string | Media>;
+    content: Record<string, Media>;
     required?: boolean;
 }
 
@@ -122,7 +122,7 @@ export interface Callback {
 }
 
 export interface Media {
-    schema?: Schema | Reference;
+    schema: Schema | Reference;
     example?: string;
     examples?: Array<string | Example | Reference>;
     encoding?: Array<string | Encoding>;
@@ -138,6 +138,9 @@ export interface Schema {
     deprecated?: boolean;
     pattern?: string;
     type?: string;
+    properties?: Properties;
+    title?: string;
+    required?: Array<string>;
 }
 export interface Discriminator {
     propertyName: string;
@@ -163,6 +166,10 @@ export interface Header {
     description?: string;
     externalDocs?: ExternalDocs;
 }
+//http://json-schema.org/
+//https://tools.ietf.org/html/draft-wright-json-schema-00
+export type Properties = Record<string, Schema>;
+
 // Swagger type ref: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#documentStructure
 
 export type ValidPaths = [Array<string>, Array<Record<string, PathItems>>];
@@ -171,6 +178,11 @@ import type { Response as ResponseExpress } from 'express';
 export type RequestExpress = Request;
 type NextFunctionExpress = NextFunction;
 
+declare global {
+    interface Array<T> {
+        _missing(el: Array<string>): Array<string> | null;
+    }
+}
 ///////////////////////////////// END OF TYPES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 import readSwagger from './controller/readSwagger';
 import * as validateReq from './controller/validateReq';
@@ -180,12 +192,18 @@ if ('message' in swagger) {
     throw swagger;
 }
 const validPaths: ValidPaths = validateReq.validPaths(swagger);
+Array.prototype._missing = function (arr: Array<string>) {
+    const result = this.filter((el: string) => !arr.includes(el));
+    return result.length === 0 ? null : result;
+};
+
 export const validate = (req: RequestExpress): true | Error => validateReq.validateReq(validPaths, req);
 export const middleware = (req: RequestExpress, res: ResponseExpress, next: NextFunctionExpress): void => {
     try {
         validate(req);
         next();
     } catch (error) {
+        // console.log(error);
         res.status(401).json({ status: 'Rejected', message: error.message });
     }
 };
