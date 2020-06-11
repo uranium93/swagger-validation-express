@@ -60,6 +60,30 @@
                         "description": "id of service"
                     },
                     {
+                        "name": "IO-Token",
+                        "in": "header",
+                        "required": false,
+                        "style": "simple",
+                        "explode": false,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^Bearer\\s[a-f0-9-]{36}$",
+                            "example": "Bearer 123456789abcdef123546841sdhiu"
+                        }
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "required": true,
+                        "style": "simple",
+                        "explode": false,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^(application\\/json){1}[; ]*(charset=utf-8 )*$",
+                            "example": "application/json"
+                        }
+                    },
+                    {
                         "in": "query",
                         "name": "query1",
                         "required": false,

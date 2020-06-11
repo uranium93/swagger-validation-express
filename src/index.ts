@@ -101,7 +101,7 @@ export interface Response {
 }
 export interface Parameter {
     name: string;
-    in: 'query' | 'headers' | 'path' | 'cookie';
+    in: 'query' | 'header' | 'path' | 'cookie';
     description?: string;
     required?: boolean;
     deprecated?: boolean;
@@ -203,6 +203,7 @@ export const middleware = (req: RequestExpress, res: ResponseExpress, next: Next
         validate(req);
         next();
     } catch (error) {
+        console.error({ Level: 'error', url: req.url, message: error.message, date: new Date(), ip: req.ip });
         res.status(401).json({ status: 'Rejected', message: error.message });
     }
 };
