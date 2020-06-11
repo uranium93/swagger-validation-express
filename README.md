@@ -13,7 +13,7 @@ swagger-validation-express uses the open source definition of swagger to work pr
 
 ### Coming soon
 
--   headers validation
+-   headers validation ( included in version @1.1.0)
 -   formdata validation
 -   logger
 -   white listing of url
