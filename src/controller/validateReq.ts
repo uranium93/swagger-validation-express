@@ -33,6 +33,7 @@ export const validateReq = (validPaths: ValidPaths, req: RequestExpress): true |
             const operation: Operation | null = validateMethod(pathsItems[i], requestMethod);
             if (operation) {
                 if (operation.parameters) {
+                    validateHeaders(operation.parameters, req);
                     validateQueryParams(operation.parameters, req);
                 }
                 if (operation.requestBody) {
@@ -182,6 +183,7 @@ const validateBodyJson = (swaggerValidBodySchema: Schema, value: any): void | Er
             throw Error(`${JSON.stringify(value)} is not valid`);
     }
 };
+
 const validateRequestBody = (swaggerValidBody: RequestBody | Reference, req: RequestExpress): true | Error => {
     const { body } = req;
     if (swaggerValidBody) {
@@ -206,6 +208,40 @@ const validateRequestBody = (swaggerValidBody: RequestBody | Reference, req: Req
 
         // check required prop
         // validate body based on schema
+    }
+    return true;
+};
+
+const validateHeaders = (parameters: Array<Parameter | Reference>, { headers }: RequestExpress): true | Error => {
+    const headersKeys = Object.keys(headers);
+    headersKeys.forEach((key, index, original) => {
+        original[index] = key.toLocaleLowerCase();
+    });
+    const refactoredHeaders: Record<string, string | undefined> = {};
+    for (const headerKey in headers) {
+        refactoredHeaders[headerKey.toLocaleLowerCase()] = headers[headerKey]?.toString();
+    }
+    for (const parameter of parameters) {
+        if ('$ref' in parameter) {
+            // TODO #3 handle ref case
+        } else {
+            if (parameter.in === 'header') {
+                const parameterName = parameter.name.toLocaleLowerCase();
+                if (parameter.required && !headersKeys.includes(parameterName)) {
+                    throw new Error(`header ${parameter.name} is required`);
+                }
+                const reqHeader = refactoredHeaders[parameterName];
+                if (reqHeader) {
+                    if (parameter.schema) {
+                        if (parameter.schema.pattern) {
+                            if (!RegExp(parameter.schema.pattern).test(`${reqHeader}`)) {
+                                throw new Error(`header ${parameter.name} : ${reqHeader} is not valid`);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     return true;
 };
