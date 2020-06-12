@@ -144,13 +144,12 @@
                                     }
                                 },
                                 "example": {
-                                    "config": {
-                                        "time": {
-                                            "value": "1M",
-                                            "priority": 5
-                                        },
-                                        "aync": {
-                                            "value": false
+                                    "key2": "string DATA",
+                                    "record": {
+                                        "subKey1": 12345,
+                                        "subKey2": {
+                                            "final": true,
+                                            "script": "<script>some important scripts that should be allowed and well formated </script>"
                                         }
                                     }
                                 },
